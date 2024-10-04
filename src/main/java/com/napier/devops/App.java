@@ -1,6 +1,7 @@
 package com.napier.devops;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class App {
@@ -163,9 +164,52 @@ public class App {
     public static void main(String[] args) {
         // Create new Application instance
         App app = new App();
+
         // Connect to database
         app.connect();
-      // Disconnect from the database
+
+        // Display all cities in the world organized by population
+        List<City> allWorldCities = getAllCitiesInWorld(app.con);
+        printCities(allWorldCities, "All Cities in the World Organized by Population");
+
+        // Display all cities in a continent organized by population (example: Europe)
+        List<City> allContinentCities = getAllCitiesInContinent(app.con, "Europe");
+        printCities(allContinentCities, "All Cities in Europe Organized by Population");
+
+        // Display all cities in a region organized by population (example: Southern Africa)
+        List<City> allRegionCities = getAllCitiesInRegion(app.con, "Southern Africa");
+        printCities(allRegionCities, "All Cities in Southern Africa Organized by Population");
+
+        // Display all cities in a country organized by population (example: USA)
+        List<City> allCountryCities = getAllCitiesInCountry(app.con, "USA");
+        printCities(allCountryCities, "All Cities in the USA Organized by Population");
+
+        // Display all cities in a district organized by population (example: Texas)
+        List<City> allDistrictCities = getAllCitiesInDistrict(app.con, "Texas");
+        printCities(allDistrictCities, "All Cities in Texas Organized by Population");
+
+        // Display top N populated cities in the world (example: top 10)
+        List<City> topNCitiesWorld = getTopNCitiesInWorld(app.con, 10);
+        printCities(topNCitiesWorld, "Top 10 Populated Cities in the World");
+
+        // Display top N populated cities in a continent (example: top 5 in Europe)
+        List<City> topNCitiesContinent = getTopNCitiesInContinent(app.con, "Europe", 10);
+        printCities(topNCitiesContinent, "Top 5 Populated Cities in Europe");
+
+        // Display top N populated cities in a region (example: top 5 in Southern Africa)
+        List<City> topNCitiesRegion = getTopNCitiesInRegion(app.con, "Southern Africa", 10);
+        printCities(topNCitiesRegion, "Top 5 Populated Cities in Southern Africa");
+
+        // Display top N populated cities in a country (example: top 5 in USA)
+        List<City> topNCitiesCountry = getTopNCitiesInCountry(app.con, "USA", 10);
+        printCities(topNCitiesCountry, "Top 5 Populated Cities in the USA");
+
+        // Display top N populated cities in a district (example: top 3 in Texas)
+        List<City> topNCitiesDistrict = getTopNCitiesInDistrict(app.con, "Texas", 10);
+        printCities(topNCitiesDistrict, "Top 3 Populated Cities in Texas");
+
+
+        // Disconnect from the database
         app.disconnect();
     }
 }
