@@ -41,12 +41,92 @@ public class App {
         }
     }
 
+    // 1. Function to return all cities in the world organized by population (largest to smallest)
+    public static List<City> getAllCitiesInWorld(Connection con) {
+        String query = "SELECT city.Name, country.Name AS CountryName, city.District, city.Population " +
+                "FROM city JOIN country ON city.CountryCode = country.Code " +
+                "ORDER BY city.Population DESC";
+        return getCityList(con, query);
+    }
+
+    // 2. Function to return all cities in a continent organized by population (largest to smallest)
+    public static List<City> getAllCitiesInContinent(Connection con, String continent) {
+        String query = "SELECT city.Name, country.Name AS CountryName, city.District, city.Population " +
+                "FROM city JOIN country ON city.CountryCode = country.Code " +
+                "WHERE country.Continent = '" + continent + "' ORDER BY city.Population DESC";
+        return getCityList(con, query);
+    }
+
+    // 3. Function to return all cities in a region organized by population (largest to smallest)
+    public static List<City> getAllCitiesInRegion(Connection con, String region) {
+        String query = "SELECT city.Name, country.Name AS CountryName, city.District, city.Population " +
+                "FROM city JOIN country ON city.CountryCode = country.Code " +
+                "WHERE country.Region = '" + region + "' ORDER BY city.Population DESC";
+        return getCityList(con, query);
+    }
+
+    // 4. Function to return all cities in a country organized by population (largest to smallest)
+    public static List<City> getAllCitiesInCountry(Connection con, String countryCode) {
+        String query = "SELECT city.Name, country.Name AS CountryName, city.District, city.Population " +
+                "FROM city JOIN country ON city.CountryCode = country.Code " +
+                "WHERE city.CountryCode = '" + countryCode + "' ORDER BY city.Population DESC";
+        return getCityList(con, query);
+    }
+
+    // 5. Function to return all cities in a district organized by population (largest to smallest)
+    public static List<City> getAllCitiesInDistrict(Connection con, String district) {
+        String query = "SELECT city.Name, country.Name AS CountryName, city.District, city.Population " +
+                "FROM city JOIN country ON city.CountryCode = country.Code " +
+                "WHERE city.District = '" + district + "' ORDER BY city.Population DESC";
+        return getCityList(con, query);
+    }
+
+    // 6. Function to return top N populated cities in the world
+    public static List<City> getTopNCitiesInWorld(Connection con, int N) {
+        String query = "SELECT city.Name, country.Name AS CountryName, city.District, city.Population " +
+                "FROM city JOIN country ON city.CountryCode = country.Code " +
+                "ORDER BY city.Population DESC LIMIT " + N;
+        return getCityList(con, query);
+    }
+
+    // 7. Function to return top N populated cities in a continent
+    public static List<City> getTopNCitiesInContinent(Connection con, String continent, int N) {
+        String query = "SELECT city.Name, country.Name AS CountryName, city.District, city.Population " +
+                "FROM city JOIN country ON city.CountryCode = country.Code " +
+                "WHERE country.Continent = '" + continent + "' ORDER BY city.Population DESC LIMIT " + N;
+        return getCityList(con, query);
+    }
+
+    // 8. Function to return top N populated cities in a region
+    public static List<City> getTopNCitiesInRegion(Connection con, String region, int N) {
+        String query = "SELECT city.Name, country.Name AS CountryName, city.District, city.Population " +
+                "FROM city JOIN country ON city.CountryCode = country.Code " +
+                "WHERE country.Region = '" + region + "' ORDER BY city.Population DESC LIMIT " + N;
+        return getCityList(con, query);
+    }
+
+    // 9. Function to return top N populated cities in a country
+    public static List<City> getTopNCitiesInCountry(Connection con, String countryCode, int N) {
+        String query = "SELECT city.Name, country.Name AS CountryName, city.District, city.Population " +
+                "FROM city JOIN country ON city.CountryCode = country.Code " +
+                "WHERE city.CountryCode = '" + countryCode + "' ORDER BY city.Population DESC LIMIT " + N;
+        return getCityList(con, query);
+    }
+
+    // 10. Function to return top N populated cities in a district
+    public static List<City> getTopNCitiesInDistrict(Connection con, String district, int N) {
+        String query = "SELECT city.Name, country.Name AS CountryName, city.District, city.Population " +
+                "FROM city JOIN country ON city.CountryCode = country.Code " +
+                "WHERE city.District = '" + district + "' ORDER BY city.Population DESC LIMIT " + N;
+        return getCityList(con, query);
+    }
+
     public static void main(String[] args) {
         // Create new Application instance
         App app = new App();
         // Connect to database
         app.connect();
-        // Disconnect from the database
+      // Disconnect from the database
         app.disconnect();
     }
 }
