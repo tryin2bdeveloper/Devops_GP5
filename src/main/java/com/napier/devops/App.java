@@ -144,6 +144,22 @@ public class App {
         return cities;
     }
 
+    // Function to print cities in a table format
+    public static void printCities(List<City> cities, String header) {
+        System.out.println("\n\n######## " + header + " ########");
+        System.out.println("+-----------------+------------------+-----------------------------+------------+");
+        System.out.printf("| %-15s | %-19s | %-27s | %-10s |\n",
+                "City Name", "Country Name", "District", "Population");
+        System.out.println("+-----------------+------------------+-----------------------------+------------+");
+
+        for (City city : cities) {
+            System.out.printf("| %-15s | %-19s | %-27s | %-10d |\n",
+                    city.getName(), city.getCountryName(), city.getDistrict(), city.getPopulation());
+        }
+
+        System.out.println("+-----------------+------------------+-----------------------------+------------+");
+    }
+
     public static void main(String[] args) {
         // Create new Application instance
         App app = new App();
