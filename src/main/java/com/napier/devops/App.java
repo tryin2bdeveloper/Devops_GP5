@@ -121,6 +121,29 @@ public class App {
         return getCityList(con, query);
     }
 
+    // Helper function to execute the query and return a list of cities
+    private static List<City> getCityList(Connection con, String query) {
+        List<City> cities = new ArrayList<>();
+        try {
+            Statement stmt = con.createStatement();
+            ResultSet rset = stmt.executeQuery(query);
+
+            // Populate city list
+            while (rset.next()) {
+                String name = rset.getString("Name");
+                String countryName = rset.getString("CountryName"); // Country name from joined country table
+                String district = rset.getString("District");
+                int population = rset.getInt("Population");
+
+                City city = new City(name, countryName, district, population);
+                cities.add(city);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return cities;
+    }
+
     public static void main(String[] args) {
         // Create new Application instance
         App app = new App();
