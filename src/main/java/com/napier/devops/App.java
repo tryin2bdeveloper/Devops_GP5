@@ -19,7 +19,7 @@ public class App {
         for (int i = 0; i < retries; ++i) {
             System.out.println("Connecting to database...");
             try {
-                Thread.sleep(2000);
+                Thread.sleep(3000);
                 con = DriverManager.getConnection("jdbc:mysql://db:3306/world?useSSL=false&allowPublicKeyRetrieval=true", "root", "example");
                 System.out.println("Successfully connected");
                 break;
@@ -37,8 +37,8 @@ public class App {
             try {
                 con.close();
             } catch (Exception e) {
-             System.out.println("Error closing connection to database.");
-           }
+                System.out.println("Error closing connection to database.");
+            }
         }
     }
 
@@ -129,7 +129,7 @@ public class App {
             Statement stmt = con.createStatement();
             ResultSet rset = stmt.executeQuery(query);
 
-            // Populate city list
+            // Populate city list (From Largest to Lowest)
             while (rset.next()) {
                 String name = rset.getString("Name");
                 String countryName = rset.getString("CountryName"); // Country name from joined country table
@@ -148,18 +148,112 @@ public class App {
     // Function to print cities in a table format
     public static void printCities(List<City> cities, String header) {
         System.out.println("\n\n######## " + header + " ########");
-        System.out.println("+-----------------+------------------+-----------------------------+------------+");
-        System.out.printf("| %-15s | %-19s | %-27s | %-10s |\n",
+        System.out.println("+------------------------------------+-----------------------------------------+-----------------------------+------------+");
+        System.out.printf("| %-34s | %-39s | %-27s | %-10s |\n",
                 "City Name", "Country Name", "District", "Population");
-        System.out.println("+-----------------+------------------+-----------------------------+------------+");
+        System.out.println("+------------------------------------+-----------------------------------------+-----------------------------+------------+");
 
         for (City city : cities) {
-            System.out.printf("| %-15s | %-19s | %-27s | %-10d |\n",
+            System.out.printf("| %-34s | %-39s | %-27s | %-10s |\n",
                     city.getName(), city.getCountryName(), city.getDistrict(), city.getPopulation());
         }
 
-        System.out.println("+-----------------+------------------+-----------------------------+------------+");
+        System.out.println("+------------------------------------+-----------------------------------------+-----------------------------+------------+");
     }
+
+
+    // Function to return top 10 world populated countries
+    public static List<Country> getTop10WorldPopulatedCountries(Connection con) {
+        return getCountryList(con,
+                "SELECT country.Code, country.Name, country.Continent, country.Region, country.Population, city.Name AS Capital " +
+                        "FROM country JOIN city ON country.Capital = city.ID ORDER BY Population DESC LIMIT 10"
+        );
+    }
+
+    // Function to return top 10 populated countries in a continent
+    public static List<Country> getTop10ContinentPopulatedCountries(Connection con, String continent) {
+        return getCountryList(con,
+                "SELECT country.Code, country.Name, country.Continent, country.Region, country.Population, city.Name AS Capital " +
+                        "FROM country JOIN city ON country.Capital = city.ID WHERE country.Continent = '" + continent + "' ORDER BY Population DESC LIMIT 10"
+        );
+    }
+
+    // Function to return top 10 populated countries in a region
+    public static List<Country> getTop10RegionPopulatedCountries(Connection con, String region) {
+        return getCountryList(con,
+                "SELECT country.Code, country.Name, country.Continent, country.Region, country.Population, city.Name AS Capital " +
+                        "FROM country JOIN city ON country.Capital = city.ID WHERE country.Region = '" + region + "' ORDER BY Population DESC LIMIT 10"
+        );
+    }
+
+    // Function to return all countries in a continent ordered by population
+    public static List<Country> getContinentPopulationLargestToLowest(Connection con, String continent) {
+        return getCountryList(con,
+                "SELECT country.Code, country.Name, country.Continent, country.Region, country.Population, city.Name AS Capital " +
+                        "FROM country JOIN city ON country.Capital = city.ID WHERE country.Continent = '" + continent + "' ORDER BY Population DESC"
+        );
+    }
+
+    // Function to return all countries in a region ordered by population
+    public static List<Country> getRegionPopulationLargestToLowest(Connection con, String region) {
+        return getCountryList(con,
+                "SELECT country.Code, country.Name, country.Continent, country.Region, country.Population, city.Name AS Capital " +
+                        "FROM country JOIN city ON country.Capital = city.ID WHERE country.Region = '" + region + "' ORDER BY Population DESC"
+        );
+    }
+
+    // Function to return all countries ordered by population (worldwide)
+    public static List<Country> getWorldPopulationLargestToLowest(Connection con) {
+        return getCountryList(con,
+                "SELECT country.Code, country.Name, country.Continent, country.Region, country.Population, city.Name AS Capital " +
+                        "FROM country JOIN city ON country.Capital = city.ID ORDER BY Population DESC"
+        );
+    }
+
+
+
+    // Helper function to execute the query and return a list of countries
+    private static List<Country> getCountryList(Connection con, String query) {
+        List<Country> countries = new ArrayList<>();
+        try {
+            Statement stmt = con.createStatement();
+            ResultSet rset = stmt.executeQuery(query);
+
+            // Populate country list
+            while (rset.next()) {
+                String countryCode = rset.getString("Code");
+                String countryName = rset.getString("Name");
+                String continent = rset.getString("Continent");
+                String region = rset.getString("Region");
+                int population = rset.getInt("Population");
+                String capital = rset.getString("Capital");
+
+                Country country = new Country(countryCode, countryName, continent, region, population, capital);
+                countries.add(country);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return countries;
+    }
+
+    // Function to print countries in a table format
+    public static void printCountries(List<Country> countries, String header) {
+        System.out.println("\n\n######## " + header + " ########");
+        System.out.println("+--------------+-----------------------------------------+---------------+-----------------------------+------------+-----------------------------------+");
+        System.out.printf("| %-12s | %-39s | %-13s | %-27s | %-10s | %-33s |\n",
+                "Country Code", "Country Name", "Continent", "Region", "Population", "Capital");
+        System.out.println("+--------------+-----------------------------------------+---------------+-----------------------------+------------+-----------------------------------+");
+
+        for (Country country : countries) {
+            System.out.printf("| %-12s | %-39s | %-13s | %-27s | %-10s | %-33s |\n",
+                    country.getCountryCode(), country.getName(), country.getContinent(),
+                    country.getRegion(), country.getPopulation(), country.getCapital());
+        }
+
+        System.out.println("+--------------+-----------------------------------------+---------------+-----------------------------+------------+-----------------------------------+");
+    }
+
 
     public static void main(String[] args) {
         // Create new Application instance
@@ -167,6 +261,38 @@ public class App {
 
         // Connect to database
         app.connect();
+
+        // ------------------------------------
+        // Country data outputs
+        // ------------------------------------
+
+        // Display top 10 populated countries in the world
+        List<Country> worldCountries = getTop10WorldPopulatedCountries(app.con);
+        printCountries(worldCountries, "World Top 10 Largest to Smallest Populated Countries");
+
+        // Display top 10 populated countries in Europe
+        List<Country> europeCountries = getTop10ContinentPopulatedCountries(app.con, "Europe");
+        printCountries(europeCountries, "Europe Top 10 Largest to Smallest Populated Countries");
+
+        // Display top 10 populated countries in Southern Africa
+        List<Country> southernAfricaCountries = getTop10RegionPopulatedCountries(app.con, "Southern Africa");
+        printCountries(southernAfricaCountries, "Southern Africa Top 10 Largest to Smallest Populated Countries");
+
+        // Display world population largest to smallest
+        List<Country> allWorldCountries = getWorldPopulationLargestToLowest(app.con);
+        printCountries(allWorldCountries, "World Population Largest to Smallest");
+
+        // Display Asia's population largest to smallest
+        List<Country> asiaCountries = getContinentPopulationLargestToLowest(app.con, "Asia");
+        printCountries(asiaCountries, "Asia (Continent) Population Largest to Smallest");
+
+        // Display Central America (Region) population largest to smallest
+        List<Country> centralAmericaCountries = getRegionPopulationLargestToLowest(app.con, "Central America");
+        printCountries(centralAmericaCountries, "Central America (Region) Population Largest to Smallest");
+
+        // ------------------------------------
+        // City data outputs
+        // ------------------------------------
 
         // Display all cities in the world organized by population
         List<City> allWorldCities = getAllCitiesInWorld(app.con);
