@@ -4,7 +4,6 @@ import java.sql.*;
 import java.util.List;
 
 public class App {
-
     private Connection con = null;
 
     public void connect() {
@@ -37,18 +36,16 @@ public class App {
             try {
                 con.close();
             } catch (Exception e) {
-                System.out.println("Error closing connection to database.");
-            }
+             System.out.println("Error closing connection to database.");
+           }
         }
     }
 
     public static void main(String[] args) {
-        // Create new Application instance as app
+        // Create new Application instance
         App app = new App();
-
         // Connect to database
         app.connect();
-
         // Disconnect from the database
         app.disconnect();
     }
